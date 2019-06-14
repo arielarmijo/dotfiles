@@ -1,0 +1,67 @@
+# i3status configuration file.
+# see "man i3status" for documentation.
+
+# It is important that this file is edited as UTF-8.
+# The following line should contain a sharp s:
+# ß
+general {
+    colors = true
+    color_good = "#859900"
+    color_bad = "#dc322f"
+    color_degraded = "#cb4b16"
+    interval = 5
+}
+
+order += "disk /boot"
+order += "disk /"
+order += "disk /home"
+order += "cpu_usage"
+order += "load"
+order += "cpu_temperature 0"
+order += "time"
+
+disk "/boot" {
+    format = " %percentage_used"
+    separator = false
+    separator_block_width = 8
+    low_threshold = 10
+    threshold_type = percentage_free
+}
+
+disk "/" {
+    format = " %percentage_used"
+    separator = false
+    separator_block_width = 8 
+    low_threshold = 10
+    threshold_type = percentage_free
+}
+
+disk "/home" {
+    format = " %percentage_used"
+    separator_block_width = 20
+    low_threshold = 10
+    threshold_type = percentage_free
+}
+
+cpu_usage {
+    format = " %usage"
+    separator = false
+    separator_block_width = 8
+}
+
+load {
+    format = " %1min %5min %15min"
+    max_threshold = "2"
+    separator = false
+    separator_block_width = 8
+}
+
+cpu_temperature 0 {
+    format = " %degrees°C"
+    path = "/sys/devices/LNXSYSTM:00/LNXCPU:01/thermal_cooling/subsystem/thermal_zone0/temp"
+    separator_block_width = 20
+}
+
+time {
+    format = " %a %d %b %Y   %H:%M"
+}

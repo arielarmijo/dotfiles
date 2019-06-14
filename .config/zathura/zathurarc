@@ -1,0 +1,5 @@
+set adjust-open "width"
+set first-page-column 1:1
+set guioptions "v"
+
+map <C-i> recolor
