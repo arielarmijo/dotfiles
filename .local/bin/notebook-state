@@ -18,7 +18,7 @@ case $1 in
 		notify-send -t $time -r 100 " Num Lock $state"
 		;;
 	[sS]creen_[oO]ff )
-		sleep 0.8 && xset dpms force off
+		sleep 0.25 && xset dpms force off
 		;;
     [tT]oggle_[aA]uto[lL]ock )
 		state="$(xset q | grep "DPMS is" | awk -F" " '{print $3}')"
