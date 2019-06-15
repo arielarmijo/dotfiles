@@ -219,10 +219,10 @@ workspace_auto_back_and_forth yes
 bindsym XF86ScreenSaver exec --no-startup-id "i3lock -i ~/.wallpapers/mountain.png -t"  
 
 # Monitor off
-bindsym $mod+F6 exec --no-startup-id "xset dpms force off"
+bindsym $mod+F6 exec --no-startup-id "sleep 1; set dpms force off"
 
 # Disable/Enable screen lock
-bindsym $mod+Shift+F6 exec --no-startup-id ~/.local/bin/notebook-state screen_lock 
+bindsym $mod+Shift+F6 exec --no-startup-id ~/.local/bin/notebook-state toggle_autolock 
 #}}}
 
 #{{{ Num Lock and Cap notification
