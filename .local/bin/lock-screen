@@ -1,0 +1,3 @@
+#!/bin/bash
+image=$(cat ~/.fehbg | grep feh | awk '{print $3}' | sed 's/\x27//g')
+i3lock -i $image

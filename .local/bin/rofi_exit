@@ -1,0 +1,28 @@
+#!/bin/bash
+
+ROFI_TEXT="Display"
+ROFI_OPTIONS=(-width 15)
+LOCKSCRIPT="i3lock -c 222222 -i ~/.config/wallpapers/mountain.png -t"
+
+typeset -A menu
+menu=(
+  [Apagar]="systemctl poweroff"
+  [Reiniciar]="systemctl reboot"
+  [Hibernar]="systemctl hibernate"
+  [Suspender]="systemctl suspend"
+  [Bloquear pantalla]="${LOCKSCRIPT}"
+  [Cerrar sesión]="i3-msg exit"
+)
+
+
+options=(-dmenu -i -lines "${#menu[@]}" -p "${ROFI_TEXT}" \
+				 "${ROFI_OPTIONS[@]}")
+
+rofi_launcher=(rofi "${options[@]}")
+
+selection="$(printf '%s\n' "${!menu[@]}" | sort | "${rofi_launcher[@]}")"
+
+if [[ -n $selection ]]
+then
+	exec ${menu[${selection}]}
+fi

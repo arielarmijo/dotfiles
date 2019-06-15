@@ -1,0 +1,13 @@
+#!/bin/bash
+
+pid=$(pidof urxvt)
+
+if [ -z "$pid" ]
+then
+	urxvt -name dropdown -e sh -c "neofetch; bash" &
+else
+	if [ "$(i3-msg '[instance="dropdown" class="URxvt"] scratchpad show' | awk -F: '{print $2}' | sed 's/}]//')" = "false" ]
+	then
+		i3-msg '[instance="dropdown" class="URxvt"] move scratchpad'
+	fi
+fi

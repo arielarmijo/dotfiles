@@ -1,0 +1,10 @@
+#!/bin/bash
+
+pid=$(pidof $1)
+    
+if [ -z "$pid" ]
+then
+    $1 &
+else
+    kill $pid
+fi

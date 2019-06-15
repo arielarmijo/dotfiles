@@ -1,0 +1,36 @@
+#!/bin/bash
+
+ROFI_TEXT="Display"
+ROFI_OPTIONS=(-width 15)
+
+INTERNAL_OUTPUT="LVDS"
+EXTERNAL_OUTPUT="VGA-0"
+
+typeset -A menu
+
+menu=(
+	[CLONE]="xrandr --output $INTERNAL_OUTPUT --auto \
+					--output $EXTERNAL_OUTPUT --auto --same-as $INTERNAL_OUTPUT"
+	[INTERNAL]="xrandr --output $INTERNAL_OUTPUT --auto \
+                       --output $EXTERNAL_OUTPUT --off"
+	[EXTERNAL]="xrandr --output $INTERNAL_OUTPUT --off \
+                       --output $EXTERNAL_OUTPUT --auto"
+    [EXTENDED RIGHT]="xrandr --output $INTERNAL_OUTPUT --auto --primary \
+                             --output $EXTERNAL_OUTPUT --auto --right-of $INTERNAL_OUTPUT"
+	[EXTENDED LEFT]="xrandr --output $INTERNAL_OUTPUT --auto --primary \
+                            --output $EXTERNAL_OUTPUT --auto --left-of $INTERNAL_OUTPUT"
+	[EXTENDED ABOVE]="xrandr --output $INTERNAL_OUTPUT --auto --primary \
+                             --output $EXTERNAL_OUTPUT --auto --above $INTERNAL_OUTPUT"
+)
+
+launcher_options=(-dmenu -i -lines "${#menu[@]}" -p "${ROFI_TEXT}" \
+				 "${ROFI_OPTIONS[@]}")
+
+launcher=(rofi "${launcher_options[@]}")
+
+selection="$(printf '%s\n' "${!menu[@]}" | sort | "${launcher[@]}")"
+
+if [[ -n $selection ]]
+then
+	exec ${menu[${selection}]}
+fi
