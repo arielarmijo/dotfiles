@@ -1,24 +1,71 @@
 #!/bin/bash
 # Scritp to manage notebook states. When a key is pressed, it may trigger several actions.
 # Dependencies:
-#   libnotify-id (aur)
-#   dunst (community)
-#   acpilight (community)
-#   libpulse (extra)
-#   xorg-xset (extra)
+#   libnotify-id
+#   dunst
+#   acpilight
+#   pulseaudio
+#	playerctl
+#   xorg-xset
 #   gnome-icon-theme
 #   feh
 #   i3lock
 
 time=1000
 case $1 in
+	[sS]creen_[sS]hot )
+		scrot '%Y-%m-%d-%T_screenshot.png'
+		canberra-gtk-play -i camera-shutter
+		;;
+	[sS]creen_[sS]hot_[fF]ocused )
+		scrot -u '%Y-%m-%d-%T_screenshot.png'
+		canberra-gtk-play -i camera-shutter
+		;;
+	[pP]layer_[pP]lay )
+		playerctl play-pause
+		if [ -n $(playerctl --list-all | grep cmus) ]
+		then
+			song="$(cmus-remote -Q | grep "tag title" | sed 's/tag\ title\ //')"
+			album="$(cmus-remote -Q | grep "tag album" | sed 's/tag\ album\ //')"
+			artist="$(cmus-remote -Q | grep "tag artist" | sed 's/tag\ artist\ //')"
+			if [ "$(cmus-remote -Q | grep status | sed 's/status\ //')" == "paused" ]
+			then
+				icon=player_pause
+			else
+				icon=player_play
+			fi
+			notify-send -t $(($time*2)) -r 50 -i $icon "$song" "$artist"
+		fi
+		;;
+	[pP]layer_[pP]revious )
+		playerctl previous
+		if [ -n $(playerctl --list-all | grep cmus) ]
+		then
+			song="$(cmus-remote -Q | grep "tag title" | cut -d ' ' -f 3-)"
+			album="$(cmus-remote -Q | grep "tag album" | cut -d ' ' -f 3- | head -n 1)"
+			artist="$(cmus-remote -Q | grep "tag artist" | cut -d ' ' -f 3-)"
+			notify-send -t $(($time*2)) -r 50 -i player_play "$song" "$album\n$artist"
+		fi
+		;;
+	[pP]layer_[nN]ext )
+		playerctl next
+		if [ -n $(playerctl --list-all | grep cmus) ]
+		then
+			song="$(cmus-remote -Q | grep "tag title" | cut -d ' ' -f 3-)"
+			album="$(cmus-remote -Q | grep "tag album" | cut -d ' ' -f 3- | head -n 1)"
+			artist="$(cmus-remote -Q | grep "tag artist" | cut -d ' ' -f 3-)"
+			notify-send -t $(($time*2)) -r 50 -i player_play "$song" "$album\n$artist"
+		fi
+		;;
     [cC]aps_[lL]ock )
 		state="$(sleep 0.25; xset q | grep "Caps Lock" | awk -F" " '{print $4}')"
 		notify-send -t $time -r 100 -i dialog-information "Caps Lock $state"
+		canberra-gtk-play -i dialog-information
 		;;
     [nN]um_[lL]ock )
 		state="$(sleep 0.25; xset q | grep "Num Lock" | awk -F" " '{print $8}')"
 		notify-send -t $time -r 100 -i dialog-information "Num Lock $state"
+		canberra-gtk-play -i dialog-information
 		;;
 	[sS]creen_[oO]ff )
 		sleep 0.25 && xset dpms force off
@@ -33,26 +80,33 @@ case $1 in
 		then
 			xautolock -disable
 			xset s off -dpms
-			notify-send -t $time -r 200 -i dialog-information "Screen Auto Lock Disabled"
+			msg="Screen Auto Lock Disabled"
 		else
 			xautolock -enable
 			xset s on +dpms
-			notify-send -t $time -r 200  -i dialog-information "Screen Auto Lock Enabled"
-		fi;;
+			msg="Screen Auto Lock Enabled"
+		fi
+		notify-send -t $time -r 200  -i dialog-information "$msg"
+		canberra-gtk-play -i dialog-information
+		;;
 	[bB]acklight_[uU]p )
 		xbacklight -inc 2
-		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%";;
+		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%"
+		;;
 	[bB]acklight_[dD]own )
 		xbacklight -dec 2
-		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%";;
+		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%"
+		;;
 	[vV]olume_[uU]p )
 		pactl set-sink-volume 0 +5%
 		volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-		notify-send -t $time -r 400 -i audio-volume-high "Volume $volume%";;
+		notify-send -t $time -r 400 -i audio-volume-high "Volume $volume%"
+		;;
 	[vV]olume_[dD]own )
 		pactl set-sink-volume 0 -5%
 		volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-		notify-send -t $time -r 400 -i audio-volume-low "Volume $volume%";;
+		notify-send -t $time -r 400 -i audio-volume-low "Volume $volume%"
+		;;
 	[mM]ute )
 		pactl set-sink-mute 0 toggle
 		mute="$(pactl list sinks | grep 'Mute:' | awk -F" " '{print $2}')"
@@ -62,10 +116,12 @@ case $1 in
 		else
 			volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
 			notify-send -t $time -r 500 -i audio-volume-medium "Volume $volume%"
-		fi;;
+		fi
+		;;
 	[kK]ill_[sS]ession )
 		loginctl | grep $USER | awk '{print $1}' | xargs loginctl terminate-session
 		;;
 	* )
-		echo "Usage: $0 <caps_lock, num_lock, screen_off, screen_lock, toggle_autolock, backlight_up, backlight_down, volume_up, volume_down, mute, kill_session>";;
+		echo "Usage: $0 <caps_lock, num_lock, screen_off, screen_lock, toggle_autolock, backlight_up, backlight_down, volume_up, volume_down, mute, kill_session>"
+		;;
 esac

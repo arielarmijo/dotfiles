@@ -148,7 +148,7 @@
     icon_position = left
 
     # Paths to default icons.
-    icon_path= /usr/share/icons/gnome/16x16/status:/usr/share/icons/gnome/16x16/devices/:/usr/share/icons/hicolor/16x16/apps/
+    icon_path= /usr/share/icons/gnome/16x16/status:/usr/share/icons/gnome/16x16/devices/:/usr/share/icons/hicolor/16x16/apps/:/usr/share/icons/gnome/32x32/actions
 
 	# Scale larger icons down to this size, set 0 to disable.
 	max_icon_size = 32   
