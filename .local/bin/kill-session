@@ -1,4 +1,0 @@
-#!/bin/bash
-
-loginctl | grep $USER | awk '{print $1}' | xargs loginctl terminate-session
-
