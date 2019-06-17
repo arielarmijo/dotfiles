@@ -1,8 +1,9 @@
 [global]
-    font = Terminus 9
-
+    
+	font = Terminus 9
     frame_width = 1
-    frame_color = "#073642"
+    frame_color = "#222222"
+
     # Allow a small subset of html markup:
     #   <b>bold</b>
     #   <i>italic</i>
@@ -141,13 +142,13 @@
     dmenu = /usr/bin/dmenu -p dunst:
 
     # Browser for opening urls in context menu.
-    browser = /usr/bin/google-chrome-stable
+    browser = /usr/bin/chromium
 
     # Align icons left/right/off
     icon_position = left
 
     # Paths to default icons.
-    icon_path= /usr/share/icons/Adwaita/16x16/status:/usr/share/icons/Adwaita/16x16/devices/:/usr/share/icons/hicolor/32x32/apps/
+    icon_path= /usr/share/icons/gnome/16x16/status:/usr/share/icons/gnome/16x16/devices/:/usr/share/icons/hicolor/16x16/apps/
 
 	# Scale larger icons down to this size, set 0 to disable.
 	max_icon_size = 32   
@@ -181,17 +182,17 @@
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the "#" and following would be interpreted as a comment.
     background = "#222222"
-    foreground = "#888888"
+    foreground = "#bbbbbb"
     timeout = 5
 
 [urgency_normal]
     background = "#222222"
-    foreground = "#568081"
+    foreground = "#bbbbbb"
     timeout = 5
 
 [urgency_critical]
     background = "#222222"
-    foreground = "#B14D4C"
+    foreground = "#b58900"
     timeout = 5
 
 

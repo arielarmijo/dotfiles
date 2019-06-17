@@ -1,23 +1,24 @@
 #!/bin/bash
-# dependencies:
+# Scritp to manage notebook states. When a key is pressed, it may trigger several actions.
+# Dependencies:
 #   libnotify-id (aur)
 #   dunst (community)
 #   acpilight (community)
 #   libpulse (extra)
 #   xorg-xset (extra)
-#   otf-font-awesome
+#   gnome-icon-theme
 #   feh
 #   i3lock
 
-time=800
+time=1000
 case $1 in
     [cC]aps_[lL]ock )
 		state="$(sleep 0.25; xset q | grep "Caps Lock" | awk -F" " '{print $4}')"
-		notify-send -t $time -r 100 " Caps Lock $state"
+		notify-send -t $time -r 100 -i dialog-information "Caps Lock $state"
 		;;
     [nN]um_[lL]ock )
 		state="$(sleep 0.25; xset q | grep "Num Lock" | awk -F" " '{print $8}')"
-		notify-send -t $time -r 100 " Num Lock $state"
+		notify-send -t $time -r 100 -i dialog-information "Num Lock $state"
 		;;
 	[sS]creen_[oO]ff )
 		sleep 0.25 && xset dpms force off
@@ -32,39 +33,39 @@ case $1 in
 		then
 			xautolock -disable
 			xset s off -dpms
-			notify-send -t $time -r 200 " Screen Auto Lock Disabled"
+			notify-send -t $time -r 200 -i dialog-information "Screen Auto Lock Disabled"
 		else
 			xautolock -enable
 			xset s on +dpms
-			notify-send -t $time -r 200 " Screen Auto Lock Enabled"
+			notify-send -t $time -r 200  -i dialog-information "Screen Auto Lock Enabled"
 		fi;;
 	[bB]acklight_[uU]p )
 		xbacklight -inc 2
-		notify-send -t $time -r 300 " Backlight $(xbacklight -get)%";;
+		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%";;
 	[bB]acklight_[dD]own )
 		xbacklight -dec 2
-		notify-send -t $time -r 300 " Backlight $(xbacklight -get)%";;
+		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%";;
 	[vV]olume_[uU]p )
 		pactl set-sink-volume 0 +5%
 		volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-		notify-send -t $time -r 400 " Volume $volume%";;
+		notify-send -t $time -r 400 -i audio-volume-high "Volume $volume%";;
 	[vV]olume_[dD]own )
 		pactl set-sink-volume 0 -5%
 		volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-		notify-send -t $time -r 400 " Volume $volume%";;
+		notify-send -t $time -r 400 -i audio-volume-low "Volume $volume%";;
 	[mM]ute )
 		pactl set-sink-mute 0 toggle
 		mute="$(pactl list sinks | grep 'Mute:' | awk -F" " '{print $2}')"
 		if [ $mute = "yes" ]
 		then
-			notify-send -t $time -r 500 " Volume muted"
+			notify-send -t $time -r 500 -i audio-volume-muted "Volume muted"
 		else
 			volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-			notify-send -t $time -r 500 " Volume $volume%"
+			notify-send -t $time -r 500 -i audio-volume-medium "Volume $volume%"
 		fi;;
 	[kK]ill_[sS]ession )
 		loginctl | grep $USER | awk '{print $1}' | xargs loginctl terminate-session
 		;;
 	* )
-		echo "Opciones disponibles: caps_lock, num_lock, toggle_autolock, screen_lock, screen_off, backlight_up, backlight_down, volume_up, volume_down, mute, kill_session.";;
+		echo "Usage: $0 <caps_lock, num_lock, screen_off, screen_lock, toggle_autolock, backlight_up, backlight_down, volume_up, volume_down, mute, kill_session>";;
 esac

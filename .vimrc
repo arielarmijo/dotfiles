@@ -1,5 +1,4 @@
 " VIM Configuration file
-set nocompatible
 set mouse=a
 
 " Display
@@ -50,9 +49,8 @@ set sw=4
 set noexpandtab
 
 syntax enable
-filetype on
-filetype plugin on
-filetype indent on
+set autoindent
+filetype plugin indent on
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 set spelllang=es

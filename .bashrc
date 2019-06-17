@@ -5,7 +5,7 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-export PATH="${PATH}:$HOME/.local/bin"
+#export PATH="${PATH}:$HOME/.local/bin"
 
 #PS1='[\u@\h \W]\$ '
 PS1='\[\e[1;32m\]\u\[\e[1;37m\]@\[\e[1;34m\]\h \[\e[1;37m\]\w \$\[\e[0m\] '
