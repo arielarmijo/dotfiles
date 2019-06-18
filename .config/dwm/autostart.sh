@@ -4,6 +4,7 @@
 #compton -b 
 #conky | while read LINE; do xsetroot -name "$LINE"; done &
 
+# Font: otf-font-awesome
 cpu_icon=""
 load_icon=""
 temp_icon=""
