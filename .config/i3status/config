@@ -45,6 +45,7 @@ disk "/home" {
 
 cpu_usage {
     format = " %usage"
+    max_threshold = "95"
     separator = false
     separator_block_width = 8
 }
@@ -58,7 +59,7 @@ load {
 
 cpu_temperature 0 {
     format = " %degrees°C"
-    path = "/sys/devices/LNXSYSTM:00/LNXCPU:01/thermal_cooling/subsystem/thermal_zone0/temp"
+    path = "/sys/class/hwmon/hwmon1/temp1_input"
     separator_block_width = 20
 }
 
