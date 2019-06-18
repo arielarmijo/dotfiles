@@ -249,8 +249,8 @@ bindsym XF86AudioPlay exec playerctl play-pause
 #}}}
 
 #{{{ Screenshoot
-bindsym Print exec "scrot"
-bindsym $mod+Print exec "scrot -u"
+bindsym Print exec --no-startup-id ~/.local/bin/notebook-state screen_shot
+bindsym $mod+Print exec --no-startup ~/.local/bin/notebook-state screen_shot_focused
 #}}}
 
 #{{{ Default windows decoration
@@ -355,4 +355,5 @@ exec --no-startup-id volumeicon
 exec --no-startup-id xautolock -time 30 -locker "i3lock -i ~/.config/wallpapers/mountain.png -t -n"
 #exec --no-startup-id gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id /usr/lib/evolution-data-server/evolution-alarm-notify 
 #}}}
