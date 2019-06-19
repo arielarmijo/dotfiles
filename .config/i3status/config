@@ -59,6 +59,7 @@ load {
 
 cpu_temperature 0 {
     format = " %degrees°C"
+    max_threshold = "70"
     path = "/sys/class/hwmon/hwmon1/temp1_input"
     separator_block_width = 20
 }
