@@ -36,7 +36,9 @@ while true; do
 	cpu_load_5m="$(cat /proc/loadavg | awk '{print $2}')"
 	cpu_load_15m="$(cat /proc/loadavg | awk '{print $3}')"
 	
-	if (($(echo "$cpu_load_1m > $cpu_load_max" |bc -l))) || (($(echo "$cpu_load_5m > $cpu_load_max" |bc -l))) || (($(echo "$cpu_load_15m > $cpu_load_max" |bc -l))); then
+	if (($(echo "$cpu_load_1m > $cpu_load_max" |bc -l))) || \
+	   (($(echo "$cpu_load_5m > $cpu_load_max" |bc -l))) || \
+	   (($(echo "$cpu_load_15m > $cpu_load_max" |bc -l))); then
 		status+="\x03$load_icon \x01"
 		tail=$(($tail+1))
 	else
@@ -74,7 +76,7 @@ while true; do
 	fi
 
 	date=$(date +"$date_format")
-	time=$(date +$time_format)
+	time=$(date +"$time_format")
 
 	status+="$cal_icon $date $clock_icon $time"
 
@@ -82,7 +84,7 @@ while true; do
 		status+=" "
 	done
 	
-	xsetroot -name "$(echo -e $status)"
+	xsetroot -name "$(echo -e "$status")"
 	sleep $(($refresh_time-1)) #cpu_usage takes 1 second to run
 
 done &
