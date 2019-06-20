@@ -13,15 +13,46 @@
 
 time=1000
 case $1 in
-	[sS]creen_[sS]hot )
-		scrot '%Y-%m-%d-%T_screenshot.png'
-		canberra-gtk-play -i camera-shutter
+    caps-lock )
+		state="$(sleep 0.1; xset q | grep "Caps Lock" | awk -F" " '{print $4}')"
+		notify-send -t $time -r 100 -i dialog-information "Caps Lock $state"
+		canberra-gtk-play -i dialog-information
 		;;
-	[sS]creen_[sS]hot_[fF]ocused )
-		scrot -u '%Y-%m-%d-%T_screenshot.png'
-		canberra-gtk-play -i camera-shutter
+    num-lock )
+		state="$(sleep 0.1; xset q | grep "Num Lock" | awk -F" " '{print $8}')"
+		notify-send -t $time -r 100 -i dialog-information "Num Lock $state"
+		canberra-gtk-play -i dialog-information
 		;;
-	[pP]layer_[pP]lay )
+	backlight-up )
+		xbacklight -inc 2
+		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%"
+		;;
+	backlight-down )
+		xbacklight -dec 2
+		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%"
+		;;
+	volume-up )
+		pactl set-sink-volume 0 +1%
+		volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
+		notify-send -t $time -r 400 -i audio-volume-high "Volume $volume%"
+		;;
+	volume-down )
+		pactl set-sink-volume 0 -1%
+		volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
+		notify-send -t $time -r 400 -i audio-volume-low "Volume $volume%"
+		;;
+	volume-mute )
+		pactl set-sink-mute 0 toggle
+		mute="$(pactl list sinks | grep 'Mute:' | awk -F" " '{print $2}')"
+		if [ $mute = "yes" ]
+		then
+			notify-send -t $time -r 500 -i audio-volume-muted "Volume muted"
+		else
+			volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
+			notify-send -t $time -r 500 -i audio-volume-medium "Volume $volume%"
+		fi
+		;;
+	player-play )
 		playerctl play-pause
 		if [ -n $(playerctl --list-all | grep cmus) ]
 		then
@@ -37,7 +68,7 @@ case $1 in
 			notify-send -t $(($time*2)) -r 50 -i $icon "$song" "$artist"
 		fi
 		;;
-	[pP]layer_[pP]revious )
+	player-previous )
 		playerctl previous
 		if [ -n $(playerctl --list-all | grep cmus) ]
 		then
@@ -47,7 +78,7 @@ case $1 in
 			notify-send -t $(($time*2)) -r 50 -i player_play "$song" "$album\n$artist"
 		fi
 		;;
-	[pP]layer_[nN]ext )
+	player-next )
 		playerctl next
 		if [ -n $(playerctl --list-all | grep cmus) ]
 		then
@@ -57,24 +88,22 @@ case $1 in
 			notify-send -t $(($time*2)) -r 50 -i player_play "$song" "$album\n$artist"
 		fi
 		;;
-    [cC]aps_[lL]ock )
-		state="$(sleep 0.25; xset q | grep "Caps Lock" | awk -F" " '{print $4}')"
-		notify-send -t $time -r 100 -i dialog-information "Caps Lock $state"
-		canberra-gtk-play -i dialog-information
+	screen-shot )
+		scrot '%Y-%m-%d-%T_screenshot.png'
+		canberra-gtk-play -i camera-shutter
 		;;
-    [nN]um_[lL]ock )
-		state="$(sleep 0.25; xset q | grep "Num Lock" | awk -F" " '{print $8}')"
-		notify-send -t $time -r 100 -i dialog-information "Num Lock $state"
-		canberra-gtk-play -i dialog-information
+	screen-shot-focused )
+		scrot -u '%Y-%m-%d-%T_screenshot.png'
+		canberra-gtk-play -i camera-shutter
 		;;
-	[sS]creen_[oO]ff )
-		sleep 0.25 && xset dpms force off
+	screen-off )
+		sleep 0.1 && xset dpms force off
 		;;
-	[sS]creen_[lL]ock )
+	screen-lock )
 		image=$(cat ~/.fehbg | grep feh | awk '{print $3}' | sed 's/\x27//g')
 		i3lock -i $image
 		;;
-    [tT]oggle_[aA]uto[lL]ock )
+    toggle-autolock )
 		state="$(xset q | grep "DPMS is" | awk -F" " '{print $3}')"
 		if [ $state = "Enabled" ]
 		then
@@ -89,39 +118,10 @@ case $1 in
 		notify-send -t $time -r 200  -i dialog-information "$msg"
 		canberra-gtk-play -i dialog-information
 		;;
-	[bB]acklight_[uU]p )
-		xbacklight -inc 2
-		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%"
-		;;
-	[bB]acklight_[dD]own )
-		xbacklight -dec 2
-		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%"
-		;;
-	[vV]olume_[uU]p )
-		pactl set-sink-volume 0 +5%
-		volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-		notify-send -t $time -r 400 -i audio-volume-high "Volume $volume%"
-		;;
-	[vV]olume_[dD]own )
-		pactl set-sink-volume 0 -5%
-		volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-		notify-send -t $time -r 400 -i audio-volume-low "Volume $volume%"
-		;;
-	[mM]ute )
-		pactl set-sink-mute 0 toggle
-		mute="$(pactl list sinks | grep 'Mute:' | awk -F" " '{print $2}')"
-		if [ $mute = "yes" ]
-		then
-			notify-send -t $time -r 500 -i audio-volume-muted "Volume muted"
-		else
-			volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-			notify-send -t $time -r 500 -i audio-volume-medium "Volume $volume%"
-		fi
-		;;
-	[kK]ill_[sS]ession )
+	session-kill )
 		loginctl | grep $USER | awk '{print $1}' | xargs loginctl terminate-session
 		;;
 	* )
-		echo "Usage: $0 <caps_lock, num_lock, screen_off, screen_lock, toggle_autolock, backlight_up, backlight_down, volume_up, volume_down, mute, kill_session>"
+		echo "Usage: $0 <caps-lock, num-lock, backlight-up, backlight-down, volume-up, volume-down, volume-mute, player-play, player-previous, player-next, screen-shot, screen-shot-focused, screen-off, screen-lock, toggle-autolock, session-kill>"
 		;;
 esac
