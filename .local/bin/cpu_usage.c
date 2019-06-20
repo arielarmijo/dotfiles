@@ -1,109 +1,54 @@
-// Licensed under the terms of the GNU GPL v3, or any later version.
-//
-// Copyright 2019 Nolan Leake <nolan@sigbus.net>
-//
-// Loosely based on bandwidth2 (originally by Guillaume Coré <fridim@onfi.re>)
-
+#include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
 #include <unistd.h>
-#include <getopt.h>
 
-typedef unsigned long long int ulli;
+int pscanf(const char *path, const char *fmt, ...) {
 
-void usage(char *argv[])
-{
-  printf("Usage: %s "
-         "[-t seconds] [-d decimals] [-l label] [-h]\n",
-         argv[0]);
-  printf("\n");
-  printf("-t seconds\trefresh time (default is 1)\n");
-  printf("-d number\tNumber of decimal places for percentage (default: 2)\n");
-  printf("-l label\tLabel to print before the cpu usage (default: CPU)\n");
-  printf("-h \t\tthis help\n");
-  printf("\n");
+	FILE *fd;
+	va_list ap;
+	int n;
+
+	if (!(fd = fopen(path, "r"))) {
+		perror("Couldn't open /proc/stat\n");
+		return -1;
+	}
+
+	va_start(ap, fmt);
+	n = vfscanf(fd, fmt, ap);
+	va_end(ap);
+	fclose(fd);
+
+	return (n == EOF) ? -1 : n;
+
 }
 
-void display(const char *label, double used, int const decimals) {
-  printf("%s%*.*lf\n", label, decimals + 1, decimals, used);
-}
+int main() {
+	
+	long double a[7], b[7], sum;
+	int cpu_perc;
+		
+	/* cpu user nice system idle iowait irq softirq */
+	if (pscanf("/proc/stat", "%*s %Lf %Lf %Lf %Lf %Lf %Lf %Lf",
+	           &b[0], &b[1], &b[2], &b[3], &b[4], &b[5], &b[6]) != 7) {
+		return -1;
+	}
+	
+	sleep(1);
 
-ulli get_usage(ulli *used_jiffies)
-{
-  FILE *fd = fopen("/proc/stat", "r");
-  ulli user, nice, sys, idle, iowait, irq, sirq, steal, guest, nguest;
+	/* cpu user nice system idle iowait irq softirq */
+	if (pscanf("/proc/stat", "%*s %Lf %Lf %Lf %Lf %Lf %Lf %Lf",
+		       &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6]) != 7) {
+		return -1;
+	}
 
-  if (!fd) {
-    perror("Couldn't open /proc/stat\n");
-    exit(EXIT_FAILURE);
-  }
-  if (fscanf(fd, "cpu  %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu",
-             &user, &nice, &sys, &idle, &iowait, &irq, &sirq,
-             &steal, &guest, &nguest) != 10) {
-    perror("Couldn't read jiffies from /proc/stat\n");
-    exit(EXIT_FAILURE);
-  }
-  fclose(fd);
+	sum = (b[0] + b[1] + b[2] + b[3] + b[4] + b[5] + b[6]) -
+	      (a[0] + a[1] + a[2] + a[3] + a[4] + a[5] + a[6]);
 
-  *used_jiffies = user + nice + sys + irq + sirq + steal + guest + nguest;
-  return *used_jiffies + idle + iowait;
-}
+	cpu_perc = (int)(100 * ((b[0] + b[1] + b[2] + b[5] + b[6]) -
+							 (a[0] + a[1] + a[2] + a[5] + a[6])) / sum);
 
-int main(int argc, char *argv[])
-{
-  int t = 1, decimals = 0;
-  char *label = "";
-  int c;
-  char *envvar = NULL;
+	printf("%i\n", cpu_perc);
 
-  envvar = getenv("REFRESH_TIME");
-  if (envvar)
-    t = atoi(envvar);
-  envvar = getenv("DECIMALS");
-  if (envvar)
-    decimals = atoi(envvar);
-  envvar = getenv("LABEL");
-  if (envvar)
-    label = envvar;
+	return 0;
 
-  while (c = getopt(argc, argv, "ht:d:l:"), c != -1) {
-    switch (c) {
-    case 't':
-      t = atoi(optarg);
-      break;
-    case 'd':
-      decimals = atoi(optarg);
-      break;
-    case 'l':
-      label = optarg;
-      break;
-    case 'h':
-      usage(argv);
-      return EXIT_SUCCESS;
-    }
-  }
-
-  ulli old_total;
-  ulli old_used;
-
-  old_total = get_usage(&old_used);
-  
-  int i;
-  
-  for( i = 0; i < 1; ++i) {
-    ulli used;
-    ulli total;
-
-    sleep(t);
-    total = get_usage(&used);
-
-    display(label, 100.0D * (used - old_used) / (total - old_total), decimals);
-    fflush(stdout);
-    old_total = total;
-    old_used = used;
-  }
-
-  return EXIT_SUCCESS;
 }
