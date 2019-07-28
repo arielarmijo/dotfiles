@@ -6,23 +6,12 @@
 
 set $mod Mod4
 
-#{{{ Colors
-set $gray1  #222222
-set $gray2  #444444
-set $gray3  #bbbbbb
-set $gray4  #eeeeee
-set $white  #fdf6e3
-set $cyan   #005577
-set $yellow #b58900
-set $red    #dc322f
-#}}}
-
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:DejaVuSansMono Nerd Font 8
+font pango:DejaVu Sans Mono 8
 
 # Reload the configuration file
 bindsym $mod+Shift+c reload
@@ -44,31 +33,31 @@ bindsym $mod+Shift+Return exec --no-startup-id urxvtc
 bindsym $mod+i exec --no-startup-id ~/.local/bin/scratchpad-terminal
 
 # Start pcmanfm
-bindsym $mod+n exec --no-startup-id pcmanfm
+#bindsym $mod+n exec --no-startup-id pcmanfm
 
 # Start Rhythmbox
-bindsym $mod+r exec --no-startup-id rhythmbox
+#bindsym $mod+r exec --no-startup-id rhythmbox
 
 # Start Evolution
-bindsym $mod+e exec --no-startup-id evolution
+#bindsym $mod+e exec --no-startup-id evolution
 
 # Start calendar
-bindsym $mod+l exec --no-startup-id gsimplecal
+#bindsym $mod+l exec --no-startup-id gsimplecal
 
 # Start calculator
-bindsym $mod+c exec --no-startup-id ~/.local/bin/toggle-app galculator
+#bindsym $mod+c exec --no-startup-id ~/.local/bin/toggle-app galculator
 
 # Start Chromium
-bindsym $mod+g exec --no-startup-id chromium
+#bindsym $mod+g exec --no-startup-id chromium
 
 # Start rofi
-bindsym $mod+m exec --no-startup-id rofi -show drun
+bindsym $mod+Shift+p exec --no-startup-id rofi -show drun
 
 # Start dmenu
 bindsym $mod+p exec --no-startup-id dmenu_run -fn "DejaVu Sans Mono-10" -nf "$gray3" -nb "$gray1"
 
 # Exit menu
-bindsym $mod+o exec --no-startup-id ~/.local/bin/rofi_exit
+#bindsym $mod+o exec --no-startup-id ~/.local/bin/rofi_exit
 
 # Display menu
 #bindsym $mod+p exec ~/.local/bin/rofi_display 
@@ -288,14 +277,13 @@ for_window [class="Xsane" title="Aviso"] floating enable, border normal, move po
 for_window [class="Xsane" title="No hay dispositivos obtenibles"] floating enable, border normal, move position center
 for_window [class="OpenSCAD"] layout tabbed 
 for_window [class="OpenSCAD" title="Preferencias"] floating enable, border normal, move position center
-for_window [class="Pcmanfm"] floating enable, border normal, resize set 910 px 610 px, move position center
-#}}}
+# }}}
 
 #{{{ Scratchpad windows 
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show	
-for_window [instance="dropdown" class="URxvt"] floating enable, move position 640 px 20 px
-#}}}
+for_window [instance="dropdown" class="URxvt"] floating enable, move position 640 px 20 px, resize set 724 px 412 px
+#} }}
 
 #{{{ Resize windows
 bindsym Ctrl+Up resize grow  height 5 px
@@ -310,6 +298,17 @@ bindsym --release button2 move scratchpad
 
 # i3bar toggle betwenn dock and hide mode
 bindsym $mod+F11 bar mode toggle
+
+#{{{ Colors
+set $gray1  #222222
+set $gray2  #444444
+set $gray3  #bbbbbb
+set $gray4  #eeeeee
+set $white  #fdf6e3
+set $cyan   #005577
+set $yellow #b58900
+set $red    #dc322f
+#}}}
 
 #{{{ Start i3bar to display a workspace bar (plus the system information i3status)
 bar {
@@ -346,14 +345,16 @@ client.unfocused        $gray1	 $gray1	      $gray2 $gray2      $gray1
 client.urgent           $red	 $red	      $white $yellow     $red
 #}}}
 
+set $wallpaper space_01.png
+
 #{{{ Autostart programs
-exec --no-startup-id feh --bg-scale ~/.wallpapers/mountain.png
+exec --no-startup-id feh --bg-scale ~/.wallpapers/$wallpaper
 exec --no-startup-id urxvtd
 exec --no-startup-id compton -b
 exec --no-startup-id nm-applet
 exec --no-startup-id volumeicon 
-exec --no-startup-id xautolock -time 30 -locker "i3lock -i ~/.config/wallpapers/mountain.png -t -n"
-#exec --no-startup-id gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
+exec --no-startup-id xautolock -time 30 -locker "i3lock -i ~/.wallpapers/$wallpaper -t -n"
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
 exec --no-startup-id /usr/lib/evolution-data-server/evolution-alarm-notify 
 #}}}

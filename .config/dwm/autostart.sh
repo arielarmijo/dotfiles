@@ -102,7 +102,7 @@ function cpu_temp {
 function date_time {
 	date=$(date +"$date_format")
 	time=$(date +"$time_format")
-	status+="$cal_icon $date $clock_icon $time"
+	status+="$cal_icon $date $clock_icon $time "
 }
 
 function add_tail {

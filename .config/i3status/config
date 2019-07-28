@@ -29,7 +29,7 @@ disk "/boot" {
 }
 
 disk "/" {
-    format = " %percentage_used"
+    format = " %percentage_used"
     separator = false
     separator_block_width = 8 
     low_threshold = 10
@@ -58,7 +58,7 @@ load {
 }
 
 cpu_temperature 0 {
-    format = " %degrees°C"
+    format = " %degrees°C"
     max_threshold = "70"
     path = "/sys/class/hwmon/hwmon1/temp1_input"
     separator_block_width = 20
