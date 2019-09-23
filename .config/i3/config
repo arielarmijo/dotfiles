@@ -205,7 +205,7 @@ workspace_auto_back_and_forth yes
 
 #{{{ Screen Lock
 # Lock screen
-bindsym XF86ScreenSaver exec --no-startup-id "i3lock -i ~/.wallpapers/mountain.png -t"  
+bindsym XF86ScreenSaver exec --no-startup-id "i3lock -i ~/.wallpapers/space_01.png -t"  
 
 # Monitor off
 bindsym $mod+F6 exec --no-startup-id "~/.local/bin/notebook-state screen_off"
@@ -215,19 +215,19 @@ bindsym $mod+Shift+F6 exec --no-startup-id ~/.local/bin/notebook-state toggle_au
 #}}}
 
 #{{{ Num Lock and Cap notification
-bindsym --release Num_Lock exec --no-startup-id ~/.local/bin/notebook-state num_lock
-bindsym --release Caps_Lock exec --no-startup-id ~/.local/bin/notebook-state caps_lock
+bindsym --release Num_Lock exec --no-startup-id ~/.local/bin/notebook-state num-lock
+bindsym --release Caps_Lock exec --no-startup-id ~/.local/bin/notebook-state caps-lock
  #}}}
 
 #{{{ Screen Brightness controls
-bindsym XF86MonBrightnessUp exec --no-startup-id ~/.local/bin/notebook-state backlight_up
-bindsym XF86MonBrightnessDown exec --no-startup-id ~/.local/bin/notebook-state backlight_down
+bindsym XF86MonBrightnessUp exec --no-startup-id ~/.local/bin/notebook-state backlight-up
+bindsym XF86MonBrightnessDown exec --no-startup-id ~/.local/bin/notebook-state backlight-down
 #}}}
 
 #{{{ Pulse audio controls
-bindsym XF86AudioMute exec --no-startup-id ~/.local/bin/notebook-state mute
-bindsym XF86AudioLowerVolume exec --no-startup-id ~/.local/bin/notebook-state volume_down 
-bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.local/bin/notebook-state volume_up
+bindsym XF86AudioMute exec --no-startup-id ~/.local/bin/notebook-state volume-mute
+bindsym XF86AudioLowerVolume exec --no-startup-id ~/.local/bin/notebook-state volume-down 
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.local/bin/notebook-state volume-up
 #}}}
 
 #{{{ Media player controls
@@ -235,11 +235,14 @@ bindsym F9 exec playerctl play-pause
 bindsym F11 exec playerctl previous
 bindsym F12 exec playerctl next
 bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioPause exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
 #}}}
 
 #{{{ Screenshoot
-bindsym Print exec --no-startup-id ~/.local/bin/notebook-state screen_shot
-bindsym $mod+Print exec --no-startup ~/.local/bin/notebook-state screen_shot_focused
+bindsym Print exec --no-startup-id ~/.local/bin/notebook-state screen-shot
+bindsym $mod+Print exec --no-startup ~/.local/bin/notebook-state screen-shot-focused
 #}}}
 
 #{{{ Default windows decoration
@@ -283,7 +286,7 @@ for_window [class="OpenSCAD" title="Preferencias"] floating enable, border norma
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show	
 for_window [instance="dropdown" class="URxvt"] floating enable, move position 640 px 20 px, resize set 724 px 412 px
-#} }}
+#}}}
 
 #{{{ Resize windows
 bindsym Ctrl+Up resize grow  height 5 px

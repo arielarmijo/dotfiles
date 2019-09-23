@@ -1,5 +1,6 @@
 #!/bin/bash
 
+wallpaper="$(cat ~/.fehbg | grep feh | awk '{print $4}' | sed 's/\x27//g')"
 dmenufont="monospace:size=9"
 list=("Apagar\nReiniciar\nCerrar sesión\nBloquear pantalla")
 choice=$(echo -e "$list" | dmenu -fn "$dmenufont")
@@ -15,6 +16,6 @@ case "$choice" in
 		loginctl | grep $USER | awk '{print $1}' | xargs loginctl terminate-session
 		;;
 	"Bloquear pantalla")
-		i3lock -i ~/.config/wallpapers/space_01.png
+		i3lock -i $wallpaper
 		;;
 esac

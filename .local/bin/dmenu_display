@@ -1,0 +1,42 @@
+#!/bin/bash
+
+dmenufont="monospace:size=9"
+
+list=("Clone\nInternal\nExternal\nExtended right\nExtended left\nExtended above")
+choice=$(echo -e "$list" | dmenu -fn "$dmenufont")
+
+INTERNAL_OUTPUT="LVDS"
+EXTERNAL_OUTPUT="VGA-0"
+
+case "$choice" in
+	"Clone")
+		xrandr --output $INTERNAL_OUTPUT --auto --output $EXTERNAL_OUTPUT --auto --same-as $INTERNAL_OUTPUT &&
+		notify-send -t 1000 -r 10 -i dialog-information "Display Clone"
+		canberra-gtk-play -i dialog-information
+		;;
+	"Internal")
+		xrandr --output $INTERNAL_OUTPUT --auto --output $EXTERNAL_OUTPUT --off &&
+		notify-send -t 1000 -r 10 -i dialog-information "Display Internal"
+		canberra-gtk-play -i dialog-information
+		;;
+	"External")
+		xrandr --output $INTERNAL_OUTPUT --off --output $EXTERNAL_OUTPUT --auto &&
+		notify-send -t 1000 -r 10 -i dialog-information "Display External"
+		canberra-gtk-play -i dialog-information
+		;;
+	"Extended right")
+		xrandr --output $INTERNAL_OUTPUT --auto --primary --output $EXTERNAL_OUTPUT --auto --right-of $INTERNAL_OUTPUT &&
+		notify-send -t 1000 -r 10 -i dialog-information "Display Extended Right"
+		canberra-gtk-play -i dialog-information
+		;;
+	"Extended left")
+		xrandr --output $INTERNAL_OUTPUT --auto --primary --output $EXTERNAL_OUTPUT --auto --left-of $INTERNAL_OUTPUT &&
+		notify-send -t 1000 -r 10 -i dialog-information "Display Extended Left"
+		canberra-gtk-play -i dialog-information
+		;;
+	"Extended above")
+		xrandr --output $INTERNAL_OUTPUT --auto --primary --output $EXTERNAL_OUTPUT --auto --above $INTERNAL_OUTPUT &&
+		notify-send -t 1000 -r 10 -i dialog-information "Display Extended Above"
+		canberra-gtk-play -i dialog-information
+		;;
+esac

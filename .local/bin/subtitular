@@ -1,0 +1,89 @@
+#!/bin/bash
+
+while [ -n "$1" ]; do
+	case "$1" in
+		-i) input="$2"
+			shift
+			;;
+		-s) subtitle="$2"
+			shift
+			;;
+		-t) title="$2"
+			shift
+			;;
+		*) echo "Opción $1 no es válida"
+	esac
+
+	shift
+
+done
+
+encoding=$(file -bi "$subtitle" | awk 'BEGIN {FS="=" } { print $2 }')
+movie_name="${input%.*}"	# El nombre del archivo sin la extensión.
+output="$title"
+output_extension="mkv"		# El formato del archivo de salida.
+cvideo="copy"			# El codec de video se copia.
+caudio="copy"			# El codec de audio se copia.
+
+# Si no hay ni título ni subtítulo, se avisa y se cierra el escript.
+if [[ -z "$input" || -z "$subtitle" ]]; then
+   	echo "Uso: $0 -i película -s subtítulo [-t título]"
+	exit 1
+fi
+
+# Comprobar que el archivo es un video.
+mimetype="$(file -b -i "$input")"
+if [ -z "$(echo $mimetype | grep -i 'video')" ]; then
+	echo "El archvo $input no es un video"
+	exit 1
+fi
+
+#Si el subtítulo no es un archivo srt se informa y se cierra el script.
+if [ ! "${subtitle##*.}" == "srt" ]; then
+   	echo "El subtítulo deber ser srt"
+	exit 1
+fi
+
+if [ "$encoding" == "unknown-8bit" ]; then
+	echo "El subtítulo tiene una codificación desconocida"
+	exit 1
+fi
+
+# Si no hay título, se usa como título el nombre del archivo.
+if [ -z "$title" ]; then title="$movie_name"; fi
+
+# Si el nombre de salida no tiene la extensión, se agrega.
+if [ ! "${output##*.}" == "$output_extension" ]; then
+	output="$title.$output_extension"
+fi
+
+# Si el nombre de salida es igual al de la película original, se le agrega [subtitulado]
+if [ "$output" == "$input" ]; then	output="$movie_name-[subtitulado].$output_extension";	fi
+
+# Si la película es avi, se recodifica.
+if [ "${input##*.}" == "avi" ]; then
+	cvideo="h264"
+	caudio="aac"
+fi
+
+
+# Obtener datos para mostrar el progreso de subtitulado
+movie_length=( $(ffmpeg -i "$input" 2>&1 | sed -n "s/.* Duration: \([^,]*\), start: .*/\1/p" | sed 's/\...//') )
+movie_length_seconds=( $(echo "$movie_length" |	awk -F':'  '{ print $1*3600 + $2*60 + $3 }'));
+movie_fps=( $(ffmpeg -i "$input" 2>&1 | sed -n "s/.*, \(.*\) tbr.*/\1/p") )
+total_frames=( $(echo $movie_length_seconds $movie_fps | awk '{ printf( "%3.0f\n" ,($1*$2)) } '));
+
+echo -ne "Duration of video\tTime elapsed\tTime remaining\tPercent complete\n"
+
+# Subtitular la película y mostrar información sobre el progreso.
+ffmpeg -y -i "$input" -sub_charenc "$encoding" -i "$subtitle" -map 0:0 -map 0:1 -map 1:0 -c:v "$cvideo" -c:a "$caudio" -c:s srt -metadata:s:a:0 language=eng -metadata:s:s:0 language=spa -metadata title="$title" "$output" 2>&1 | awk -vRS="\r" '$1 ~ /frame/ {gsub(/frame=/," "); gsub(/fps=/," "); gsub(/kB/," "); gsub(/time=/," "); gsub(/ \(/," "); gsub(/\.[0-9][0-9]/,""); printf "\r'$movie_length'\t\t"$6"\t%02d:%02d:%02d\t"int(($1/'$total_frames')*100)" %%",int((('$total_frames'-$1)/$2)/3600), int((((('$total_frames'-$1)/$2)/3600)-(int((('$total_frames'-$1)/$2)/3600)))*60), int((((('$total_frames'-$1)/$2)/60)-(int((('$total_frames'-$1)/$2)/60)))*60); fflush();}'
+
+#ffmpeg -y -i "$input" -sub_charenc "$encoding" -i "$subtitle" -map 0:0 -map 0:1 -map 1:0 -c:v "$cvideo" -c:a "$caudio" -c:s srt -metadata:s:a:0 language=eng -metadata:s:s:0 language=spa -metadata title="$title" "$output" 
+
+# Comprobar si el comando anterior fue exitoso.
+if [ "${PIPESTATUS[0]}" -ne 0 ];then
+	echo -ne "\nNo se pudo subtitular la película.\n"
+else
+	echo -ne "\nLa película "$output" se ha subtitulado correctamente\n"
+	notify-send "La película "$output" se ha subtitulado correctamente"
+fi

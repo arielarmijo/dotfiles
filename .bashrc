@@ -5,14 +5,11 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-#export PATH="${PATH}:$HOME/.local/bin"
-
 #PS1='[\u@\h \W]\$ '
-PS1='\[\e[1;32m\]\u\[\e[1;37m\]@\[\e[1;34m\]\h \[\e[1;37m\]\w \$\[\e[0m\] '
+PS1='\[\e[1;32m\]\u\[\e[1;37m\]@\[\e[1;35m\]\h \[\e[1;37m\]\w \$\[\e[0m\] '
 
 complete -cf sudo
 
 alias ls='ls --color=auto'
 alias clean='sudo pacman -Rns $(pacman -Qtdq)'
-alias i3conf='vim ~/.config/i3/config'
-alias doom='zandronum'
+alias bt='bluetoothctl connect 00:11:67:C1:01:5C'

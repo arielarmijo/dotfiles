@@ -10,14 +10,12 @@ Xft.rgba: rgb
 URxvt*termName:			rxvt-unicode
 URxvt*buffered:			true
 URxvt*cursorBlink:		true
-URxvt*underlineColor:	yellow
-!URxvt*font:				xft:DejaVu Sans Mono:size=10:antialias=true, xft:Font Awesome 5 Brands Regular:size=7, xft:Font Awesome 5 Free Solid:size=7, xft:devicons:size=10
-!URxvt*boldFont:			xft:DejaVu Sans Mono:bold:size=10:antialias=true:hinting=true, xft:devicons:size=10
+URxvt*underlineColor:	blue
 URxvt*font:				xft:DejaVuSansMono Nerd Font:size=10
 URxvt*boldFont:			xft:DejaVuSansMono Nerd Font:bold:size=10 
 URxvt*depth:			32
 URxvt*background:		rgba:0000/0043/0054/c800
-URxvt*borderless:		1
+URxvt*borderless:		true
 URxvt*scrollBar:		false
 URxvt*loginShell:		true
 Urxvt*secondaryScroll:  true    # Enable Shift-PageUp/Down in screen

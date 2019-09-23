@@ -1,0 +1,12 @@
+#!/bin/bash
+
+FOLDER="$(net usershare info | grep -m 1 "$1")"
+
+if [ -z "$FOLDER" ]; then
+    # The server could not be reached, unmount the shares
+	net usershare add $1 $2 "" Everyone:F guest_ok=y
+else
+    # The server is up, make sure the shares are mounted
+	net usershare delete $1
+fi
+

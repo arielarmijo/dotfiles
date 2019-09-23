@@ -4,7 +4,7 @@
 #   libnotify-id
 #   dunst
 #   acpilight
-#   pulseaudio
+#   alsa-utils
 #	playerctl
 #   xorg-xset
 #   gnome-icon-theme
@@ -12,116 +12,127 @@
 #   i3lock
 
 time=1000
+
 case $1 in
-    caps-lock )
+
+	caps-lock )
 		state="$(sleep 0.1; xset q | grep "Caps Lock" | awk -F" " '{print $4}')"
 		notify-send -t $time -r 100 -i dialog-information "Caps Lock $state"
 		canberra-gtk-play -i dialog-information
 		;;
-    num-lock )
+    
+	num-lock )
 		state="$(sleep 0.1; xset q | grep "Num Lock" | awk -F" " '{print $8}')"
 		notify-send -t $time -r 100 -i dialog-information "Num Lock $state"
 		canberra-gtk-play -i dialog-information
 		;;
+	
 	backlight-up )
 		xbacklight -inc 2
-		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%"
+		notify-send -t $time -r 200 -i dialog-information "Backlight $(xbacklight -get)%"
 		;;
+	
 	backlight-down )
 		xbacklight -dec 2
-		notify-send -t $time -r 300 -i dialog-information "Backlight $(xbacklight -get)%"
+		notify-send -t $time -r 200 -i dialog-information "Backlight $(xbacklight -get)%"
 		;;
+	
 	volume-up )
-		pactl set-sink-volume 0 +1%
-		volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-		notify-send -t $time -r 400 -i audio-volume-high "Volume $volume%"
+		amixer set Master 5%+
+		volume="$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }')"
+		notify-send -t $time -r 300 -i audio-volume-high "Volume $volume"
 		;;
+	
 	volume-down )
-		pactl set-sink-volume 0 -1%
-		volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-		notify-send -t $time -r 400 -i audio-volume-low "Volume $volume%"
+		amixer set Master 5%-
+		volume="$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }')"
+		notify-send -t $time -r 300 -i audio-volume-low "Volume $volume"
 		;;
+	
 	volume-mute )
-		pactl set-sink-mute 0 toggle
-		mute="$(pactl list sinks | grep 'Mute:' | awk -F" " '{print $2}')"
-		if [ $mute = "yes" ]
+		amixer set Master toggle
+		if [ -n "$(amixer get Master | grep -w -m 1 "off")" ]
 		then
-			notify-send -t $time -r 500 -i audio-volume-muted "Volume muted"
+			notify-send -t $time -r 400 -i audio-volume-muted "Volume muted"
 		else
-			volume="$(pactl list sinks | grep '^[[:space:]]Volume:' | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
-			notify-send -t $time -r 500 -i audio-volume-medium "Volume $volume%"
+			volume="$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }')"
+			notify-send -t $time -r 400 -i audio-volume-medium "Volume $volume"
 		fi
 		;;
+
 	player-play )
-		playerctl play-pause
-		if [ -n $(playerctl --list-all | grep cmus) ]
+		if [ -n "$(pgrep cmus)" ]
 		then
-			song="$(cmus-remote -Q | grep "tag title" | sed 's/tag\ title\ //')"
-			album="$(cmus-remote -Q | grep "tag album" | sed 's/tag\ album\ //')"
-			artist="$(cmus-remote -Q | grep "tag artist" | sed 's/tag\ artist\ //')"
-			if [ "$(cmus-remote -Q | grep status | sed 's/status\ //')" == "paused" ]
-			then
-				icon=player_pause
-			else
-				icon=player_play
-			fi
-			notify-send -t $(($time*2)) -r 50 -i $icon "$song" "$artist"
+			cmus-remote -u
+		else
+			urxvtc -name "cmus" -e "cmus"
 		fi
 		;;
+	
 	player-previous )
-		playerctl previous
-		if [ -n $(playerctl --list-all | grep cmus) ]
+		if [ -n "$(pgrep cmus)" ]
 		then
-			song="$(cmus-remote -Q | grep "tag title" | cut -d ' ' -f 3-)"
-			album="$(cmus-remote -Q | grep "tag album" | cut -d ' ' -f 3- | head -n 1)"
-			artist="$(cmus-remote -Q | grep "tag artist" | cut -d ' ' -f 3-)"
-			notify-send -t $(($time*2)) -r 50 -i player_play "$song" "$album\n$artist"
+			cmus-remote -r
 		fi
 		;;
+
 	player-next )
-		playerctl next
-		if [ -n $(playerctl --list-all | grep cmus) ]
+		if [ -n "$(pgrep cmus)" ]
 		then
-			song="$(cmus-remote -Q | grep "tag title" | cut -d ' ' -f 3-)"
-			album="$(cmus-remote -Q | grep "tag album" | cut -d ' ' -f 3- | head -n 1)"
-			artist="$(cmus-remote -Q | grep "tag artist" | cut -d ' ' -f 3-)"
-			notify-send -t $(($time*2)) -r 50 -i player_play "$song" "$album\n$artist"
+			cmus-remote -n
 		fi
 		;;
+
 	screen-shot )
 		scrot '%Y-%m-%d-%T_screenshot.png'
 		canberra-gtk-play -i camera-shutter
 		;;
+	
 	screen-shot-focused )
 		scrot -u '%Y-%m-%d-%T_screenshot.png'
 		canberra-gtk-play -i camera-shutter
 		;;
+	
 	screen-off )
 		sleep 0.1 && xset dpms force off
 		;;
+	
 	screen-lock )
-		image=$(cat ~/.fehbg | grep feh | awk '{print $3}' | sed 's/\x27//g')
+		image=$(cat ~/.fehbg | grep feh | awk '{print $4}' | sed 's/\x27//g')
 		i3lock -i $image
 		;;
-    toggle-autolock )
-		state="$(xset q | grep "DPMS is" | awk -F" " '{print $3}')"
-		if [ $state = "Enabled" ]
+    
+	toggle-autolock )
+		previous_state="$(xset q | grep "DPMS is" | awk -F" " '{print $3}')"
+		if [ $previous_state = "Enabled" ]
 		then
 			xautolock -disable
 			xset s off -dpms
-			msg="Screen Auto Lock Disabled"
 		else
 			xautolock -enable
 			xset s on +dpms
-			msg="Screen Auto Lock Enabled"
 		fi
-		notify-send -t $time -r 200  -i dialog-information "$msg"
+		current_state="$(xset q | grep "DPMS is" | awk -F" " '{print $3}')"
+		notify-send -t $time -r 600  -i dialog-information "Screen Auto Lock $current_state"
 		canberra-gtk-play -i dialog-information
 		;;
+	
 	session-kill )
 		loginctl | grep $USER | awk '{print $1}' | xargs loginctl terminate-session
 		;;
+	
+	open-ranger )
+		urxvtc -name ranger -e ranger
+		;;
+	
+	floating-terminal )
+		urxvtc -name dropdown -g 82x22+704+0 -e sh -c "neofetch; bash"
+		;;
+
 	* )
 		echo "Usage: $0 <caps-lock, num-lock, backlight-up, backlight-down, volume-up, volume-down, volume-mute, player-play, player-previous, player-next, screen-shot, screen-shot-focused, screen-off, screen-lock, toggle-autolock, session-kill>"
 		;;
+
 esac
+
+
