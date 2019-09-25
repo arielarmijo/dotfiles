@@ -1,3 +1,18 @@
+
+wallpaper="$(cat ~/.fehbg | grep feh | awk '{print $4}' | sed 's/\x27//g')"
+
+feh --bg-scale $wallpaper
+urxvtd -q -o -f
+compton -b
+volumeicon &
+nm-applet & 
+xautolock -time 30 -locker "i3lock -nti $wallpaper" &
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+/usr/lib/evolution-data-server/evolution-alarm-notify &
+/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
+export SSH_AUTH_SOCK
 export PATH="${PATH}:$HOME/.local/bin"
 export _JAVA_AWT_WM_NONREPARENTING=1
 export _JAVA_OPTIONS='-Dsun.java2d.opengl=true'
+
+~/.local/bin/statusbar

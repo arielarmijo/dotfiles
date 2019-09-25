@@ -125,10 +125,6 @@ case $1 in
 		urxvtc -name ranger -e ranger
 		;;
 	
-	floating-terminal )
-		urxvtc -name dropdown -g 82x22+704+0 -e sh -c "neofetch; bash"
-		;;
-
 	* )
 		echo "Usage: $0 <caps-lock, num-lock, backlight-up, backlight-down, volume-up, volume-down, volume-mute, player-play, player-previous, player-next, screen-shot, screen-shot-focused, screen-off, screen-lock, toggle-autolock, session-kill>"
 		;;
