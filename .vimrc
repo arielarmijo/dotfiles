@@ -59,3 +59,15 @@ set foldmethod=marker
 " Custom maps
 nmap <Space> za
 nnoremap <F2> :set hlsearch!<CR>
+nnoremap <F3> :call ToggleFoldMethod()<CR>
+
+function ToggleFoldMethod()
+	if &foldmethod == "marker"
+		set foldmethod=syntax
+	elseif &foldmethod == "syntax"
+		set foldmethod=indent
+	elseif &foldmethod == "indent"
+		set foldmethod=marker
+	endif
+	echo join(["foldmethod", &foldmethod], "=")
+endfunction
