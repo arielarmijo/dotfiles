@@ -5,7 +5,7 @@ feh --bg-scale $wallpaper
 urxvtd -q -o -f
 compton -b
 volumeicon &
-nm-applet & 
+cmst & 
 xautolock -time 30 -locker "i3lock -nti $wallpaper" &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 /usr/lib/evolution-data-server/evolution-alarm-notify &

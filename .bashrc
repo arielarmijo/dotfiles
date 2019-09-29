@@ -11,3 +11,5 @@ complete -cf sudo
 
 alias ls='ls --color=auto'
 alias clean='sudo pacman -Rns $(pacman -Qtdq)'
+alias bt='bluetoothctl'
+alias nf='neofetch'

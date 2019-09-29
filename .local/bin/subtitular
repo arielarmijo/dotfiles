@@ -84,6 +84,6 @@ ffmpeg -y -i "$input" -sub_charenc "$encoding" -i "$subtitle" -map 0:0 -map 0:1 
 if [ "${PIPESTATUS[0]}" -ne 0 ];then
 	echo -ne "\nNo se pudo subtitular la película.\n"
 else
-	echo -ne "\nLa película "$output" se ha subtitulado correctamente\n"
-	notify-send "La película "$output" se ha subtitulado correctamente"
+	echo -ne "\n"$output" se ha subtitulado correctamente\n"
+	notify-send ""$output"" "se ha subtitulado correctamente"
 fi

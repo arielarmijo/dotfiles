@@ -6,12 +6,13 @@
 boot_icon=""
 root_icon=""
 home_icon=""
-cpu_icon=""
+cpu_icon="﬙"
 load_icon=""
 temp_icon=""
 cal_icon=""
 clock_icon=""
-sep="〉"
+#sep="〉"
+sep="| "
 
 # Date and time format
 date_format="%a %d %b %Y"
@@ -24,7 +25,6 @@ cpu_load_max=2.00
 cpu_temp_max=70
 
 # Colors
-#red="^c#EE4444^"
 red="^c#FF0000^"
 gray="^c#bbbbbb^"
 

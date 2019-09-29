@@ -20,7 +20,7 @@ URxvt*scrollBar:		false
 URxvt*loginShell:		true
 Urxvt*secondaryScroll:  true    # Enable Shift-PageUp/Down in screen
 URxvt*saveLines:		2000
-URxvt*visualBell:		true
+URxvt*visualBell:		false
 URxvt*scrollTtyOutput:  false
 URxvt*scrollWithBuffer: true
 URxvt*scrollTtyKeypress:true

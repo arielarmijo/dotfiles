@@ -1,7 +1,6 @@
 #!/bin/bash
-# Scritp to manage notebook states. When a key is pressed, it may trigger several actions.
+# Scritp to manage key bindings.
 # Dependencies:
-#   libnotify-id
 #   dunst
 #   acpilight
 #   alsa-utils
@@ -11,52 +10,54 @@
 #   feh
 #   i3lock
 
+# Variables
 time=1000
 
+# Main
 case $1 in
 
 	caps-lock )
 		state="$(sleep 0.1; xset q | grep "Caps Lock" | awk -F" " '{print $4}')"
-		notify-send -t $time -r 100 -i dialog-information "Caps Lock $state"
+		dunstify -t $time -r 100 -i dialog-information "Caps Lock $state"
 		canberra-gtk-play -i dialog-information
 		;;
     
 	num-lock )
 		state="$(sleep 0.1; xset q | grep "Num Lock" | awk -F" " '{print $8}')"
-		notify-send -t $time -r 100 -i dialog-information "Num Lock $state"
+		dunstify -t $time -r 100 -i dialog-information "Num Lock $state"
 		canberra-gtk-play -i dialog-information
 		;;
 	
 	backlight-up )
 		xbacklight -inc 2
-		notify-send -t $time -r 200 -i dialog-information "Backlight $(xbacklight -get)%"
+		dunstify -t $time -r 200 -i dialog-information "Backlight $(xbacklight -get)%"
 		;;
 	
 	backlight-down )
 		xbacklight -dec 2
-		notify-send -t $time -r 200 -i dialog-information "Backlight $(xbacklight -get)%"
+		dunstify -t $time -r 200 -i dialog-information "Backlight $(xbacklight -get)%"
 		;;
 	
 	volume-up )
-		amixer set Master 5%+
-		volume="$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }')"
-		notify-send -t $time -r 300 -i audio-volume-high "Volume $volume"
+		amixer set Master 1%+
+		volume="$(amixer get Master | grep -m 1 '%' | awk -F'[][]' '{ print $2 }')"
+		dunstify -t $time -r 300 -i audio-volume-high "Volume $volume"
 		;;
 	
 	volume-down )
-		amixer set Master 5%-
-		volume="$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }')"
-		notify-send -t $time -r 300 -i audio-volume-low "Volume $volume"
+		amixer set Master 1%-
+		volume="$(amixer get Master | grep -m 1 '%' | awk -F'[][]' '{ print $2 }')"
+		dunstify -t $time -r 300 -i audio-volume-low "Volume $volume"
 		;;
 	
 	volume-mute )
 		amixer set Master toggle
 		if [ -n "$(amixer get Master | grep -w -m 1 "off")" ]
 		then
-			notify-send -t $time -r 400 -i audio-volume-muted "Volume muted"
+			dunstify -t $time -r 400 -i audio-volume-muted "Volume muted"
 		else
-			volume="$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }')"
-			notify-send -t $time -r 400 -i audio-volume-medium "Volume $volume"
+			volume="$(amixer get Master | grep -m 1 '%' | awk -F'[][]' '{ print $2 }')"
+			dunstify -t $time -r 400 -i audio-volume-medium "Volume $volume"
 		fi
 		;;
 
@@ -113,7 +114,7 @@ case $1 in
 			xset s on +dpms
 		fi
 		current_state="$(xset q | grep "DPMS is" | awk -F" " '{print $3}')"
-		notify-send -t $time -r 600  -i dialog-information "Screen Auto Lock $current_state"
+		dunstify -t $time -r 600  -i dialog-information "Screen Auto Lock $current_state"
 		canberra-gtk-play -i dialog-information
 		;;
 	
@@ -121,12 +122,20 @@ case $1 in
 		loginctl | grep $USER | awk '{print $1}' | xargs loginctl terminate-session
 		;;
 	
-	open-ranger )
-		urxvtc -name ranger -e ranger
+	open )
+		case $2 in
+		ranger )
+			urxvtc -name ranger -e ranger
+			;;
+
+		* )
+			$2
+			;;
+		esac
 		;;
-	
+
 	* )
-		echo "Usage: $0 <caps-lock, num-lock, backlight-up, backlight-down, volume-up, volume-down, volume-mute, player-play, player-previous, player-next, screen-shot, screen-shot-focused, screen-off, screen-lock, toggle-autolock, session-kill>"
+		echo "Opción no reconocida."
 		;;
 
 esac

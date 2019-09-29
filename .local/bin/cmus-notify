@@ -17,4 +17,4 @@ case $cmus_state in
 		;;
 esac
 
-notify-send -t 2500 -r 500 -i $icon "$song" "$album\n$artist"
+dunstify -t 2500 -r 500 -i $icon "$song" "$album\n$artist"
