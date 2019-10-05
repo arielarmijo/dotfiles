@@ -1,0 +1,2 @@
+set status_display_program=/home/aarmijo/.local/bin/cmus-notify
+bind common q quit
